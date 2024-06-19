@@ -1,11 +1,11 @@
 <!-- idris
 module README
 
-import Language.Data.Monomorphy
+import Deriving.Specialise.Data
 -->
 
-# Monomophy (your data)
+# Specialise data
 
-Macro functions for Idris 2 for rare cases when you need to automatically make your particular data types monomorphic
+Macro functions for Idris 2 for deriving specialised variants of data types
 
 ## TBD

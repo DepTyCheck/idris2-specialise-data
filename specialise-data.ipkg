@@ -1,0 +1,14 @@
+package specialise-data
+
+authors = "Denis Buzdalov"
+
+brief = "Macro functions to derive specialised data types"
+
+license = "Apache-2.0"
+
+sourcedir = "src"
+builddir = ".build"
+
+depends = elab-util
+
+modules = Deriving.Specialise.Data

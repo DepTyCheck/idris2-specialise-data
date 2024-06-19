@@ -1,4 +1,4 @@
-module Language.Data.Monomorphy
+module Deriving.Specialise.Data
 
 -- to be removed
 import Data.Fin

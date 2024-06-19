@@ -1,5 +1,5 @@
-[custom.all.monomorphy]
+[custom.all.specialise-data]
 type = "local"
 path = "."
-ipkg = "monomorphy.ipkg"
+ipkg = "specialise-data.ipkg"
 test = "tests/tests.ipkg"
