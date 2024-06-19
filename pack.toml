@@ -1,0 +1,5 @@
+[custom.all.monomorphy]
+type = "local"
+path = "."
+ipkg = "monomorphy.ipkg"
+test = "tests/tests.ipkg"

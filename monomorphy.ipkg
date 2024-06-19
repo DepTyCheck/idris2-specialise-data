@@ -1,0 +1,12 @@
+package monomorphy
+
+authors = "Denis Buzdalov"
+
+brief = "Macro functions to monomorphy data types"
+
+license = "Apache-2.0"
+
+sourcedir = "src"
+builddir = ".build"
+
+--modules =
