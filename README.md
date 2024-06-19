@@ -1,6 +1,7 @@
 <!-- idris
 module README
 
+import Language.Data.Monomorphy
 -->
 
 # Monomophy (your data)

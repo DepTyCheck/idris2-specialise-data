@@ -9,4 +9,4 @@ license = "Apache-2.0"
 sourcedir = "src"
 builddir = ".build"
 
---modules =
+modules = Language.Data.Monomorphy
