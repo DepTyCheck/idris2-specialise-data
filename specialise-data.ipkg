@@ -10,5 +10,6 @@ sourcedir = "src"
 builddir = ".build"
 
 depends = elab-util
+        , i-hate-parens
 
 modules = Deriving.Specialise.Data

@@ -18,6 +18,8 @@ import Language.Reflection.Syntax
 import Language.Reflection.Types
 import Language.Reflection.Utils
 
+import Syntax.IHateParens.Function
+
 %default total
 
 ---------------------------
@@ -41,10 +43,15 @@ record SpecData where
   toSpec    : FunDecl
   fromSpec  : FunDecl
 
--- todo to return clause for `to` and `from` convertions
-specCon : (newTyName, newConName : Name) ->
-          (extArgs : List Arg) -> (ty : TypeInfo) -> (con : Con _ ty.args) -> (appArgs : Vect ty.arty TTImp) -> Maybe ITy
-specCon newTyName newConName extArgs ty con appArgs = do
+record SpecCon where
+  constructor MkSpecCon
+  conTy   : ITy
+  conTo   : Clause
+  conFrom : Clause
+
+specCon : (newTyName, newConName, convToName, convFromName : Name) ->
+          (extArgs : List Arg) -> (ty : TypeInfo) -> (con : Con _ ty.args) -> (appArgs : Vect ty.arty TTImp) -> Maybe SpecCon
+specCon newTyName newConName convToName convFromName extArgs ty con appArgs = do
   let freeCon = fromList $ mapMaybe name $ toList con.args
   let freeExt = fromList $ mapMaybe name extArgs
 
@@ -55,6 +62,8 @@ specCon newTyName newConName extArgs ty con appArgs = do
 
   -- TODO to ensure names in substitution RHS (`namesInSubst`) do not overlap free names of the constructor (`freeCon`)
 
+  -- TODO to ensure that recursive calls to the type being specialised are appropriately substituted
+
   let namesInSubst = concatMap allVarNames' $ Prelude.toList subst
   let newFreeExtArgs = flip filter extArgs $ maybe False (contains' namesInSubst) . name
 
@@ -63,9 +72,20 @@ specCon newTyName newConName extArgs ty con appArgs = do
   let oldArgsToBeLeft = oldArgsToBeLeft <&> {type $= applySubst subst, piInfo $= map $ applySubst subst}
 
   let newArgs = newFreeExtArgs ++ oldArgsToBeLeft
-  pure $ mkTy newTyName $ piAll newTyName.nameVar newArgs
+  pure $ MkSpecCon .| mkTy newConName (piAll newTyName.nameVar newArgs) .| ?conTo_impl .| ?conFrom_impl
 
 specType : MonadError (FC, String) m => (extArgs : List Arg) -> (ty : TypeInfo) -> (appArgs : Vect ty.arty TTImp) -> m SpecData
+specType extArgs ty appArgs = do
+  let newTyName = ?newTyName
+  let newConName : Name -> Name = ?newConName
+  let convToName = ?convToName
+  let convFromName = ?convFromName
+
+  let specCons = flip mapMaybe ty.cons $ \con => specCon newTyName (newConName con.name) convToName convFromName extArgs ty con appArgs
+
+  let newData = iData ?vis newTyName (piAll type extArgs) ?newTyOpts $ conTy <$> specCons
+
+  ?specType_rhs
 
 export
 specialisation : (ty : tyTy) -> Elab SpecData
@@ -86,10 +106,10 @@ listnat : SpecData
 --listnat = %runElab specialisation $ List Nat
 
 sotrue : SpecData
---sotrue = %ruNElab specialisation $ So True
+--sotrue = %runElab specialisation $ So True
 
 sofalse : SpecData
---sofalse = %ruNElab specialisation $ So False
+--sofalse = %runElab specialisation $ So False
 
 listfin : SpecData
 --listfin = %runElab specialisation $ \i => List $ Fin i
