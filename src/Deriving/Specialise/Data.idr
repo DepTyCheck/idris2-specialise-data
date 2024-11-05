@@ -15,6 +15,7 @@ import Data.Vect.Quantifiers -- workaround of elab script runner's bug #2439
 
 import public Language.Reflection
 import Language.Reflection.Syntax
+import Language.Reflection.Syntax.Ops
 import Language.Reflection.Types
 import Language.Reflection.Utils
 
@@ -49,6 +50,8 @@ record SpecCon where
   conTo   : Clause
   conFrom : Clause
 
+-- TODO to think: `appArgs` are of type `Vect ty.arty TTImp`, which do not give us information on whether those arguments are explicit or implicit
+
 specCon : (newTyName, newConName, convToName, convFromName : Name) ->
           (extArgs : List Arg) -> (ty : TypeInfo) -> (con : Con _ ty.args) -> (appArgs : Vect ty.arty TTImp) -> Maybe SpecCon
 specCon newTyName newConName convToName convFromName extArgs ty con appArgs = do
@@ -74,8 +77,8 @@ specCon newTyName newConName convToName convFromName extArgs ty con appArgs = do
   let newArgs = newFreeExtArgs ++ oldArgsToBeLeft
   pure $ MkSpecCon .| mkTy newConName (piAll newTyName.nameVar newArgs) .| ?conTo_impl .| ?conFrom_impl
 
-specType : MonadError (FC, String) m => (extArgs : List Arg) -> (ty : TypeInfo) -> (appArgs : Vect ty.arty TTImp) -> m SpecData
-specType extArgs ty appArgs = do
+specType : MonadError (FC, String) m => Visibility -> (extArgs : List Arg) -> (ty : TypeInfo) -> (appArgs : Vect ty.arty TTImp) -> m SpecData
+specType vis extArgs ty appArgs = do
   let newTyName = ?newTyName
   let newConName : Name -> Name = ?newConName
   let convToName = ?convToName
@@ -83,12 +86,20 @@ specType extArgs ty appArgs = do
 
   let specCons = flip mapMaybe ty.cons $ \con => specCon newTyName (newConName con.name) convToName convFromName extArgs ty con appArgs
 
-  let newData = iData ?vis newTyName (piAll type extArgs) ?newTyOpts $ conTy <$> specCons
+  let newData = iData vis newTyName (piAll type extArgs) [] $ conTy <$> specCons
+
+  let oldTyApplied = appAll ty.name $ toList appArgs
+  let Just newTyApplied = for extArgs toArgument <&> map @{Compose} (\(_, mn, _) => maybe implicitTrue var mn)
+    | Nothing => ?badExtArgs
+  let newTyApplied = var newTyName `apply` newTyApplied
+
+  let toSig = arg oldTyApplied .-> newTyApplied
+  let fromSig = arg newTyApplied .-> oldTyApplied
 
   ?specType_rhs
 
 export
-specialisation : (ty : tyTy) -> Elab SpecData
+specialisation : {default Public visibility : Visibility} -> (ty : tyTy) -> Elab SpecData
 specialisation ty = do
   ty <- quote ty
   let (extArgs, ty) = unLambda ty

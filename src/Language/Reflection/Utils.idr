@@ -14,6 +14,14 @@ import Language.Reflection.Types
 
 %default total
 
+export
+toArgument : Arg -> Maybe $ Argument (Count, Maybe Name, TTImp)
+toArgument $ MkArg cnt ImplicitArg Nothing ty = Nothing
+toArgument $ MkArg cnt ImplicitArg (Just n) ty = Just $ NamedArg EmptyFC n (cnt, Just n, ty)
+toArgument $ MkArg cnt ExplicitArg n ty = Just $ Arg EmptyFC (cnt, n, ty)
+toArgument $ MkArg cnt AutoImplicit n ty = Just $ AutoArg EmptyFC (cnt, n, ty)
+toArgument $ MkArg cnt (DefImplicit x) n ty = Nothing
+
 ---------------------------------------------
 --- Traversing the `TTImp` data structure ---
 ---------------------------------------------
