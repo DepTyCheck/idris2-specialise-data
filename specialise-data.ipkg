@@ -13,3 +13,4 @@ depends = elab-util
         , i-hate-parens
 
 modules = Deriving.Specialise.Data
+        , Language.Reflection.Utils
