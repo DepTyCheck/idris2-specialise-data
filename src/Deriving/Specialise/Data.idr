@@ -163,3 +163,30 @@ xlistnat : SpecData
 
 xnat : SpecData
 --xnat = %runElab specialisation $ X Nat
+
+------------------------
+
+--Vect5 : Type -> Type
+--Vect5 = %runElab specialisation $ \a => Vect 5 a
+
+-----------------------
+
+--f : Type -> Type
+--
+--data Y : Type -> Type where
+--  Y1 : Y (List $ Maybe a)
+--  Y2 : Y (List a)
+--  Y3 : Y (List $ List a)
+--  Y4 : Y Nat
+--  Y5 : Y (List $ Maybe Nat)
+--  Y5 : Y (List $ f Nat)
+--
+--Y' : Type -> Type
+--Y' = %runElab specialisation $ \a => Y (List a)
+--
+--Y'' : Type -> Type
+--Y'' = %runElab specialisation $ \a => Y (List $ Maybe a)
+--
+--Y''' : Type -> Type
+--Y''' = %runElab specialisation $ \a => Y (List $ f a)
+
