@@ -113,6 +113,15 @@ specialisation ty = do
 
 %language ElabReflection
 
+trivial_list : SpecData
+--trivial_list = %runElab specialisation List
+
+trivial_list' : SpecData
+--trivial_list' = %runElab specialisation $ \y => List y
+
+trivial_vect' : SpecData
+--trivial_vect' = %runElab specialisation $ \n, a => Vect n a
+
 listnat : SpecData
 --listnat = %runElab specialisation $ List Nat
 
@@ -190,3 +199,28 @@ xnat : SpecData
 --Y''' : Type -> Type
 --Y''' = %runElab specialisation $ \a => Y (List $ f a)
 
+-----------------------
+
+--data Y a = MkY a
+--data X : Type -> Type where
+--  X1 : Y a -> X a
+--  X2 : X a -> X a
+--
+--X' : Type
+--X' = %runElab specialisation $ X Nat
+
+-----------------------
+
+--data X : Type -> Nat -> Type where
+--  Xn : X a 5 -> X a n
+--  Xm : X a k -> X a m
+--
+--X' : Nat -> Type
+--X' = %runElab specialisation $ \n => X Nat n
+-- -- we expect `Xn` specialising to `X' 5 -> X' n`
+-- -- we expect `Xm` specialising to `X' k -> X' m`
+--
+--X'' : Type -> Type
+--X'' = %runElab specialisation $ \a => X a 6
+-- -- we ex[ect `Xn` specialising to `X a 5 -> X'' a`
+-- -- we ex[ect `Xm` specialising to `X a k -> X'' a`
