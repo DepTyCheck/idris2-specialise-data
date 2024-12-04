@@ -36,6 +36,9 @@ private infixl 8 <|+|> -- same as `<+>`
 (<|+|>) : Semigroup a => Maybe a -> Maybe a -> Maybe a
 x <|+|> y = [| x <+> y |]
 
+Unifiable a => Unifiable (WithFC a) where
+  fitLeft mf (MkFCVal _ x) (MkFCVal _ x') = fitLeft mf x x'
+
 parameters {auto zTTImp : Unifiable TTImp}
   public export
   Unifiable Clause where
@@ -78,7 +81,7 @@ parameters {auto zTTImp : Unifiable TTImp}
 
   public export
   Unifiable ITy where
-    fitLeft mf (MkTy _ _ n ty) (MkTy _ _ n' ty') = ?foo_125
+    fitLeft mf (MkTy _ n ty) (MkTy _ n' ty') = ?foo_125
 
   public export
   Unifiable Data where
@@ -95,8 +98,12 @@ parameters {auto zTTImp : Unifiable TTImp}
     fitLeft mf (MkRecord _ n ps opts cn fs) (MkRecord _ n' ps' opts' cn' fs') = ?foo_130
 
   public export
+  Unifiable IClaimData where
+    fitLeft mf (MkIClaimData c v fos t) (MkIClaimData c' v' fos' t') = ?foo_131
+
+  public export
   Unifiable Decl where
-    fitLeft mf (IClaim _ c v fos t) (IClaim _ c' v' fos' t') = ?foo_131
+    fitLeft mf (IClaim cd) (IClaim cd') = fitLeft mf cd cd'
     fitLeft mf (IData _ v t d) (IData _ v' t' d') = ?foo_132
     fitLeft mf (IDef _ n cs) (IDef _ n' cs') = ?foo_133
     fitLeft mf (IParameters _ ps ds) (IParameters _ ps' ds') = ?foo_134
