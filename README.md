@@ -2,7 +2,7 @@
 module README
 
 import Data.Vect
-import public Deriving.Specialise.Data
+import Deriving.SpecialiseData
 
 %language ElabReflection
 -->
