@@ -45,15 +45,16 @@ To do this, we can call `specialiseDataLam'` with the `ListNat` name and `List N
 This will produce the following type:
 <!-- idris
 namespace DummyLN {
+%hide README.ListNat.ListNat
 -->
 ```idris
 data ListNat : Type where
   Nil : ListNat
   (::) : Nat -> ListNat -> ListNat
 ```
-<!--
+<!-- idris
+%unhide README.ListNat.ListNat
  }
-%hide DummyLN.ListNat
 ln : ListNat
 ln = [1,2,3]
 -->
@@ -75,6 +76,11 @@ It is not required to fully specify all arguments of the type when specialising.
 ```idris
 %runElab specialiseDataLam' `{VectNat} $ \n => Vect n Nat
 ```
+
+<!-- idris
+vn : VectNat 3
+vn = [1,2,3]
+-->
 
 When specialising GADTs, the specialised type will consist only of constructors whose return signatures match the given invocation.
 
