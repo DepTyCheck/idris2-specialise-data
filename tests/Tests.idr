@@ -4,5 +4,6 @@ import Test.Golden.RunnerHelper
 
 main : IO ()
 main = goldenRunner
-  [ "Documentation" `atDir` "docs"
+  [ "Documentation"   `atDir` "docs"
+  , "Specialise data" `atDir` "specialise-data"
   ]
