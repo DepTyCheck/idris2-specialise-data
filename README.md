@@ -1,3 +1,11 @@
+<!-- idris
+module README
+
+import Data.Vect
+import public Deriving.Specialise.Data
+
+%language ElabReflection
+-->
 # Dependent data type specialiser
 
 This library is used by [DepTyCheck](https://github.com/buzden/deptycheck) and was formerly part of `elab-util-extra`.
@@ -14,28 +22,38 @@ The simplest function to use directly is `specialiseDataLam'`. It takes as argum
 Consider the following example: we wish to generate a specialised type `ListNat`
 equivalent to `List Nat`.
 
+<!-- idris
+namespace Dummy {
+%hide Prelude.List
+-->
 ```idris
 data List : Type -> Type where
   Nil : List a
   (::) : a -> List a -> List a
 ```
+<!-- idris
+%unhide Prelude.List
+ }
+-->
 
 To do this, we can call `specialiseDataLam'` with the `ListNat` name and `List Nat` invocation:
 
 ```idris
-import public Deriving.SpecialiseData
-
-%language ElabReflection
-
 %runElab specialiseDataLam' `{ListNat} $ List Nat
 ```
 
 This will produce the following type:
+<!-- idris
+namespace DummyLN {
+-->
 ```idris
 data ListNat : Type where
   Nil : ListNat
   (::) : Nat -> ListNat -> ListNat
 ```
+<!--
+ }
+-->
 
 Besides the type itself, the specialiser will implement a number of auxiliary interfaces:
 - `Cast ListNat (List Nat)`
@@ -52,10 +70,6 @@ Besides the type itself, the specialiser will implement a number of auxiliary in
 It is not required to fully specify all arguments of the type when specialising. For instance, to produce a `Vect` of `Nat` values, the specialiser invocation will look like this:
 
 ```idris
-import public Deriving.SpecialiseData
-
-%language ElabReflection
-
 %runElab specialiseDataLam' `{VectNat} $ \n => Vect n Nat
 ```
 
