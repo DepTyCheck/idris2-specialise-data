@@ -53,6 +53,9 @@ data ListNat : Type where
 ```
 <!--
  }
+%hide DummyLN.ListNat
+ln : ListNat
+ln = [1,2,3]
 -->
 
 Besides the type itself, the specialiser will implement a number of auxiliary interfaces:
