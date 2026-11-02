@@ -42,8 +42,8 @@ record RecursionSearchState where
   mToPRenames : SortedMap Name TTImp
   ||| Accumulated transformation to cast from specialised type to argument type
   pToMRenames : SortedMap Name TTImp
-  ||| SnocList containing recursiveness of previous arguments
-  areArgsRecursive : SnocList Bool
+  ||| SnocList containing metadata of previous arguments
+  areArgsRecursive : SnocList ArgMeta
   ||| The pre-baked arguments to run unification with.
   argsForUnifier : Subset (Vect (length areArgsRecursive) Arg) (All IsNamedArg)
   ||| Accumulated arguments to be used in specialised constructor
@@ -60,6 +60,7 @@ parameters (t : SpecTask)
   checkArgRecursion rss (Element thisArg thisArgNamed) = do
     let (MkRSS cRenames pToMRenames areArgsRec (Element argsForUni _) (Element argsOut _)) = rss
     let (aLhs, aa) = unAppAny thisArg.type
+    let hasMutualRecursion = hasNameInsideDeep t.polyTy.name thisArg.type
     let True = (length aa /= 0) || (isJust $ lookupType =<< getVar aLhs)
       | False => do
         let outPiInfo = substituteVariables cRenames <$> thisArg.piInfo
@@ -70,7 +71,7 @@ parameters (t : SpecTask)
           MkRSS
             cRenames
             pToMRenames
-            (areArgsRec :< False)
+            (areArgsRec :< MkAMeta False hasMutualRecursion)
             (Element (snoc argsForUni thisArg) (snoc %search thisArgNamed))
             (Element (argsOut :< outArg) (%search :< outArgNamed))
     let Element ta _ = fromListAll t.tqArgs @{t.tqArgsNamed}
@@ -92,7 +93,7 @@ parameters (t : SpecTask)
           MkRSS
             (insert (argName thisArg) `(~mToPImpl ~(var $ argName thisArg)) cRenames)
             (insert (argName thisArg) `(~pToMImpl ~(var $ argName thisArg)) pToMRenames)
-            (areArgsRec :< True)
+            (areArgsRec :< MkAMeta True False) -- If we found direct recursion, mutual recursion is out by definition
             (Element (snoc argsForUni thisArg) (snoc %search thisArgNamed))
             (Element (argsOut :< outArg) (%search :< outArgNamed))
       _ => do
@@ -104,7 +105,7 @@ parameters (t : SpecTask)
           MkRSS
             cRenames
             pToMRenames
-            (areArgsRec :< False)
+            (areArgsRec :< MkAMeta False hasMutualRecursion)
             (Element (snoc argsForUni thisArg) (snoc %search thisArgNamed))
             (Element (argsOut :< outArg) (%search :< outArgNamed))
 
@@ -131,9 +132,9 @@ parameters (t : SpecTask)
     let tyRet = reAppAny (var t.resultName) typeArgs
     let n = if params.eraseConNames then fromString "\{t.resultName}^Con^\{show cIdx}" else dropNS pCon.name
     rssRhs <- foldlM checkArgRecursion (MkRSS empty empty [<] (Element [] []) (Element [<] [<])) specArgs
-    let (MkRSS mToPRenames pToMRenames argsAreRecursive' _ (Element outArgs' outArgsNamed')) = rssRhs
+    let (MkRSS mToPRenames pToMRenames argsMeta' _ (Element outArgs' outArgsNamed')) = rssRhs
     let Element outArgs outArgsNamed = toListAll outArgs' outArgsNamed'
-    let conMeta = MkCMeta (MkAMeta <$> toList argsAreRecursive') mToPRenames pToMRenames
+    let conMeta = MkCMeta (toList argsMeta') mToPRenames pToMRenames
     pure $ (MkCon
       { name = inGenNS t $ n
       , args = outArgs

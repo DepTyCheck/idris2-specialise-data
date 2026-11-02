@@ -19,6 +19,8 @@ record ArgMeta where
   constructor MkAMeta
   ||| The argument's type can be substituted by specialised type invocation
   isRecursiveArg : Bool
+  ||| The argument's type contains a potential mutual recursion
+  hasMutualRecursion: Bool
 
 ||| Specialisation-related constructor metadata
 public export
