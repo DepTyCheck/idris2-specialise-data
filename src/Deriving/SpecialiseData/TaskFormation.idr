@@ -67,6 +67,8 @@ specDecideArg ga with (ga.given)
     let (appLhs, appTerms) = unAppAny x
     let IVar _ tyName = appLhs
       | IPrimVal _ (PrT _) => (SpecLit x, "Given a primitive type invocation")
+      | IPi _ _ _ _ _ _  => (SpecLit x, "Given a function (pi) type")
+      | IType _ => (SpecLit x, "Given a type of types")
       | _ => (Passthrough, "Given value head is not a variable")
     case lookupType tyName of
       Just tyInfo => case appTerms of
