@@ -1,0 +1,35 @@
+1/1: Building Test (Test.idr)
+LOG specialiseData.taskFormation:20: Builtin.Equal (a := Prelude.Types.Nat) Given a type invocation w/o arguments, specialising
+LOG specialiseData.taskFormation:20: Builtin.Equal (b := Prelude.Types.Nat -> Prelude.Types.Nat -> Prelude.Types.Nat) Given a function (pi) type, specialising
+LOG specialiseData.taskFormation:20: Builtin.Equal ({arg:309} := fromInteger 1) Given a non-type expr, passing through
+LOG specialiseData.taskFormation:20: Builtin.Equal ({arg:312} := Prelude.minus) Given a non-type expr, passing through
+LOG specialiseData.taskFormation:20: Builtin.Equal (a := Prelude.Types.Nat) Given a type invocation w/o arguments, specialising
+LOG specialiseData.taskFormation:20: Builtin.Equal (b := Type) Given a type of types, specialising
+LOG specialiseData.taskFormation:20: Builtin.Equal ({arg:309} := fromInteger 1) Given a non-type expr, passing through
+LOG specialiseData.taskFormation:20: Builtin.Equal ({arg:312} := Prelude.Types.Nat) Given a type invocation w/o arguments, specialising
+Just
+  (    var "Builtin.Equal"
+    .! ("a", var "Prelude.Types.Nat")
+    .! ( "b"
+       ,     MkArg MW ExplicitArg Nothing (var "Prelude.Types.Nat")
+         .-> MkArg MW ExplicitArg Nothing (var "Prelude.Types.Nat")
+         .-> var "Prelude.Types.Nat"
+       )
+    .$ var "lam^0"
+    .$ var "lam^1"
+  , ( [ MkArg MW ExplicitArg (Just "lam^0") implicitFalse
+      , MkArg MW ExplicitArg (Just "lam^1") implicitFalse
+      ]
+    , [Just (var "fromInteger" .$ primVal (BI 1)), Just (var "Prelude.minus")]
+    )
+  )
+Just
+  (    var "Builtin.Equal"
+    .! ("a", var "Prelude.Types.Nat")
+    .! ("b", type)
+    .$ var "lam^0"
+    .$ var "Prelude.Types.Nat"
+  , ( [MkArg MW ExplicitArg (Just "lam^0") implicitFalse]
+    , [Just (var "fromInteger" .$ primVal (BI 1))]
+    )
+  )
