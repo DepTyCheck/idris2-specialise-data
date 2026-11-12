@@ -6,4 +6,5 @@ main : IO ()
 main = goldenRunner
   [ "Documentation"   `atDir` "docs"
   , "Specialise data" `atDir` "specialise-data"
+  , "Task formation"  `atDir` "task-formation"
   ]
