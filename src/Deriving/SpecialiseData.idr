@@ -46,12 +46,6 @@ import public Language.Reflection.Unify.Interface
 --- DATA SPECIALISATION ---
 ---------------------------
 
-||| Remove named and auto-implicit applications of holes
-cleanupHoleAutoImplicitsImpl : TTImp -> TTImp
-cleanupHoleAutoImplicitsImpl (IAutoApp _ x (Implicit _ _)) = x
-cleanupHoleAutoImplicitsImpl (INamedApp _ x _ (Implicit _ _)) = x
-cleanupHoleAutoImplicitsImpl x = x
-
 ||| Perform a specialisation for a given type name, kind and content expressions
 |||
 ||| In order to generate a specialised type declaration equivalent to the following type alias:
@@ -77,9 +71,7 @@ specialiseDataRaw :
   (resultContent : TTImp) ->
   m (TypeInfo, List Decl)
 specialiseDataRaw resultName resultKind resultContent = do
-  let resultKind = mapTTImp cleanupHoleAutoImplicitsImpl $ cleanupNamedHoles resultKind
-  let resultContent = mapTTImp cleanupHoleAutoImplicitsImpl $ cleanupNamedHoles resultContent
-  task <- getTask resultName resultKind resultContent
+  task <- getTask resultName (cleanupNamedHoles resultKind) (cleanupNamedHoles resultContent)
   logPoint DetailedDebug "specialiseData" [task.polyTy] "Specialisation task: \{show task}"
   uniResults <- sequence $ mapCons task $ unifyCon task
   (Element specTy specTyNamed, specMeta) <- mkSpecTy task uniResults
