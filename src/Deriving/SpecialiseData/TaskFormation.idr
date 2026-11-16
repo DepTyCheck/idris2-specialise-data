@@ -6,6 +6,9 @@ import public Language.Reflection.Syntax
 import public Language.Reflection.Compat.TypeInfo
 import public Language.Reflection.Logging -- workaround for idris-lang/Idris2#2439
 
+import public Data.Hashable
+import public Data.Hashable.Base
+
 allQImpl : Monad m => NamesInfoInTypes => TTImp -> TTImp -> m TTImp
 allQImpl (IPi {}) r = pure r
 allQImpl (IApp {}) (IApp _ (Implicit {}) _) = pure `(?)
@@ -160,3 +163,15 @@ exprToSpecTask dec expr = do
                 "No non-passthrough arguments!"
                 Nothing
   Just <$> argsToSpecTask dec tyName genArgs
+
+export
+specTaskToName : Monad m => TTImp -> m Name
+specTaskToName t = do
+  let (_, lamBody) = unLambda t
+  let (callee, _) = unAppAny lamBody
+  let vname =
+    case callee of
+         (IVar _ n) => show $ snd $ unNS n
+         x => show x
+  hash <- pure $ show $ hash t
+  pure $ fromString "\{vname}^\{hash}"
