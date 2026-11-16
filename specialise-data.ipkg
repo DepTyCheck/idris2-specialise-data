@@ -11,6 +11,8 @@ builddir = ".build"
 
 depends = containers
         , elab-util-extra
+        , hashable
+        , hashable-derive
         , mk
 
 modules = Deriving.SpecialiseData
