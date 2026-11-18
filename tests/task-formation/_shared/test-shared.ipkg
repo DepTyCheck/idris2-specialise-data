@@ -2,5 +2,5 @@ package test-shared
 
 depends = specialise-data
         , prettier
-          
+
 modules = Shared
