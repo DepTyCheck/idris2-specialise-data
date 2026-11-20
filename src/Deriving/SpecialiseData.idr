@@ -72,7 +72,8 @@ specialiseDataRaw :
   m (TypeInfo, List Decl)
 specialiseDataRaw resultName resultKind resultContent = do
   task <- getTask resultName (cleanupNamedHoles resultKind) (cleanupNamedHoles resultContent)
-  logPoint DetailedDebug "specialiseData" [task.polyTy] "Specialisation task: \{show task}"
+  logPoint DetailedDebug "specialiseData" [task] "Specialising as \{show resultName}"
+  logPoint DetailedDebug "specialiseData.task" [task] "Specialisation task: \{show task}"
   uniResults <- sequence $ mapCons task $ unifyCon task
   (Element specTy specTyNamed, specMeta) <- mkSpecTy task uniResults
   decls <- specDecls task uniResults specTy specMeta

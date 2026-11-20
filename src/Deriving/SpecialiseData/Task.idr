@@ -10,6 +10,7 @@ import Language.Reflection.Compat
 import public Language.Reflection.Compat.TypeInfo
 import Language.Reflection.Expr
 import Language.Reflection.Expr.VarSubst
+import public Language.Reflection.Logging
 
 --------------------------------
 --- SPECIALISATION TASK TYPE ---
@@ -20,6 +21,7 @@ public export
 record SpecTask where
   constructor MkSpecTask
   ||| Full unification task
+  tqLambda            : TTImp
   tqArgs              : List Arg
   tqRet               : TTImp
   {auto 0 tqArgsNamed : All IsNamedArg tqArgs}
@@ -43,7 +45,8 @@ export
 Show SpecTask where
   showPrec p t =
     showCon p "SpecTask" $ joinBy "" $
-      [ showArg t.tqArgs
+      [ showArg t.tqLambda
+      , showArg t.tqArgs
       , showArg t.tqRet
       , showArg t.ttArgs
       , showArg t.currentNs
@@ -53,6 +56,9 @@ Show SpecTask where
       , showArg "<polyTy>"
       ]
 
+export
+LogPosition SpecTask where
+  logPosition st = "(\{show st.tqLambda})"
 
 ---------------------
 --- TASK ANALYSIS ---
@@ -157,7 +163,8 @@ getTask resultName resultKind resultContent = do
           (var (inGenNSImpl currentNs (snd $ unNS $ resultName) (snd $ unNS $ resultName))) $
             ttArgs.appsWith @{ttArgsNamed} var empty
   pure $ MkSpecTask
-    { tqArgs
+    { tqLambda = resultContent
+    , tqArgs
     , tqRet
     , tqArgsNamed
     , ttArgs
