@@ -42,25 +42,25 @@ specClaims :
   MonadLog m => SpecTask -> UniResults -> (mt : TypeInfo) -> (0 mtNamed : AllTyArgsNamed mt) => TypeMeta -> m $ List Decl
 specClaims t uniResults specTy specMeta = do
   let specTySig = mkSpecTySig t
-  logPoint DetailedDebug "specialiseData.specDecls.specTy.sig" [specTy] $ show specTySig
+  logPoint DetailedDebug "specialiseData.specDecls.specTy.sig" [t] $ show specTySig
   let mToPImplClaim = mkMToPImplClaim t
-  logPoint DetailedDebug "specialiseData.specDecls.mToPImpl.sig" [specTy] $ show mToPImplClaim
+  logPoint DetailedDebug "specialiseData.specDecls.mToPImpl.sig" [t] $ show mToPImplClaim
   let mToPClaim = mkMToPClaim t
-  logPoint DetailedDebug "specialiseData.specDecls.mToP.sig" [specTy] $ show mToPClaim
+  logPoint DetailedDebug "specialiseData.specDecls.mToP.sig" [t] $ show mToPClaim
   let decEqClaims : List Decl = [ mkDecEqImplClaim t, mkDecEqClaim t ]
-  logPoint DetailedDebug "specialiseData.specDecls.decEq.sig" [specTy] $ show decEqClaims
+  logPoint DetailedDebug "specialiseData.specDecls.decEq.sig" [t] $ show decEqClaims
   let showClaims = mkShowClaims t
-  logPoint DetailedDebug "specialiseData.specDecls.show.sig" [specTy] $ show showClaims
+  logPoint DetailedDebug "specialiseData.specDecls.show.sig" [t] $ show showClaims
   let eqClaims = mkEqClaims t
-  logPoint DetailedDebug "specialiseData.specDecls.eq.sig" [specTy] $ show eqClaims
+  logPoint DetailedDebug "specialiseData.specDecls.eq.sig" [t] $ show eqClaims
   let pToMImplClaim = mkPToMImplClaim t
-  logPoint DetailedDebug "specialiseData.specDecls.pToMImpl.sig" [specTy] $ show pToMImplClaim
+  logPoint DetailedDebug "specialiseData.specDecls.pToMImpl.sig" [t] $ show pToMImplClaim
   let pToMClaim = mkPToMClaim t
-  logPoint DetailedDebug "specialiseData.specDecls.pToM.sig" [specTy] $ show pToMClaim
+  logPoint DetailedDebug "specialiseData.specDecls.pToM.sig" [t] $ show pToMClaim
   let fromStringClaims = mkFromStringClaims t
-  logPoint DetailedDebug "specialiseData.specDecls.fromString.sig" [specTy] $ show fromStringClaims
+  logPoint DetailedDebug "specialiseData.specDecls.fromString.sig" [t] $ show fromStringClaims
   let numClaims = mkNumClaims t
-  logPoint DetailedDebug "specialiseData.specDecls.num.sig" [specTy] $ show numClaims
+  logPoint DetailedDebug "specialiseData.specDecls.num.sig" [t] $ show numClaims
   let anyUndecided = any isUndecided uniResults
   let sClaims = join [
       [ mToPImplClaim, mToPClaim]
@@ -74,7 +74,7 @@ specClaims t uniResults specTy specMeta = do
       , numClaims
     ]
   let claims : List Decl = sClaims ++ if anyUndecided then [] else dClaims
-  logPoint DetailedDebug "specialiseData.specDecls.claims" [specTy] $ show claims
+  logPoint DetailedDebug "specialiseData.specDecls.claims" [t] $ show claims
   pure $ specTySig :: claims
 
 export
@@ -82,27 +82,27 @@ specBodies :
   MonadLog m => SpecTask -> UniResults -> (mt : TypeInfo) -> (0 _ : AllTyArgsNamed mt) => TypeMeta -> m $ List Decl
 specBodies t uniResults specTy specMeta = do
   let specTyDecl = specTy.declNoNS
-  logPoint DetailedDebug "specialiseData.specDecls.specTy" [specTy] $ show specTyDecl
+  logPoint DetailedDebug "specialiseData.specDecls.specTy" [t] $ show specTyDecl
   let mToPImplDecls = mkMToPImplDecls t uniResults specTy specMeta
-  logPoint DetailedDebug "specialiseData.specDecls.mToPImpl" [specTy] $ show mToPImplDecls
+  logPoint DetailedDebug "specialiseData.specDecls.mToPImpl" [t] $ show mToPImplDecls
   let mToPDecls = mkMToPDecls t specTy
-  logPoint DetailedDebug "specialiseData.specDecls.mToP" [specTy] $ show mToPDecls
+  logPoint DetailedDebug "specialiseData.specDecls.mToP" [t] $ show mToPDecls
   let castInjDecls = mkCastInjDecls t uniResults specTy specMeta
-  logPoint DetailedDebug "specialiseData.specDecls.castInj" [specTy] $ show castInjDecls
+  logPoint DetailedDebug "specialiseData.specDecls.castInj" [t] $ show castInjDecls
   let decEqDecls = mkDecEqDecls t uniResults specTy
-  logPoint DetailedDebug "specialiseData.specDecls.decEq" [specTy] $ show decEqDecls
+  logPoint DetailedDebug "specialiseData.specDecls.decEq" [t] $ show decEqDecls
   let showDecls = mkShowDecls t uniResults specTy
-  logPoint DetailedDebug "specialiseData.specDecls.show" [specTy] $ show showDecls
+  logPoint DetailedDebug "specialiseData.specDecls.show" [t] $ show showDecls
   let eqDecls = mkEqDecls t uniResults specTy
-  logPoint DetailedDebug "specialiseData.specDecls.eq" [specTy] $ show eqDecls
+  logPoint DetailedDebug "specialiseData.specDecls.eq" [t] $ show eqDecls
   let pToMImplDecls = mkPToMImplDecls t uniResults specTy specMeta
-  logPoint DetailedDebug "specialiseData.specDecls.pToMImpl" [specTy] $ show pToMImplDecls
+  logPoint DetailedDebug "specialiseData.specDecls.pToMImpl" [t] $ show pToMImplDecls
   let pToMDecls = mkPToMDecls t specTy
-  logPoint DetailedDebug "specialiseData.specDecls.pToM" [specTy] $ show pToMDecls
+  logPoint DetailedDebug "specialiseData.specDecls.pToM" [t] $ show pToMDecls
   let fromStringDecls = mkFromStringDecls t specTy
-  logPoint DetailedDebug "specialiseData.specDecls.fromString" [specTy] $ show fromStringDecls
+  logPoint DetailedDebug "specialiseData.specDecls.fromString" [t] $ show fromStringDecls
   let numDecls = mkNumDecls t specTy
-  logPoint DetailedDebug "specialiseData.specDecls.num" [specTy] $ show numDecls
+  logPoint DetailedDebug "specialiseData.specDecls.num" [t] $ show numDecls
   let anyUndecided = any isUndecided uniResults
   let decidedDecls =
     [ pToMImplDecls

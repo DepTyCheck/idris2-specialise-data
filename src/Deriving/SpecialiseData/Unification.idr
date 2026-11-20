@@ -91,12 +91,12 @@ export
 unifyCon :
   MonadLog m => (unifier : CanUnify m) =>
   (t : SpecTask) -> (con : Con) -> (0 conN : ConArgsNamed con) => m UnificationVerdict
-unifyCon t con = logBounds Debug "specialiseData.unifyCon" [t.polyTy, con] $ do
+unifyCon t con = logBounds Debug "specialiseData.unifyCon" [t, con] $ do
   let Element ca _ = fromListAll con.args @{conArgsNamed}
   let Element ta _ = fromListAll t.tqArgs @{t.tqArgsNamed}
   let uniTask =
     MkUniTask {lfv=_} ca con.type
               {rfv=_} ta t.fullInvocation
-  logPoint DetailedDebug "specialiseData.unifyCon" [t.polyTy, con] "Unifier task: \{show uniTask}"
+  logPoint DetailedDebug "specialiseData.unifyCon" [t, con] "Unifier task: \{show uniTask}"
   uniRes <- unify uniTask
-  logValue DetailedDebug "specialiseData.unifyCon" [t.polyTy, con] "Unifier output: \{show uniRes}" uniRes
+  logValue DetailedDebug "specialiseData.unifyCon" [t, con] "Unifier output: \{show uniRes}" uniRes
