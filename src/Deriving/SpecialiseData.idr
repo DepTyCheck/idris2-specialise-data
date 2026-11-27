@@ -76,6 +76,8 @@ specialiseDataRaw resultName resultKind resultContent = do
   logPoint DetailedDebug "specialiseData.task" [task] "Specialisation task: \{show task}"
   uniResults <- sequence $ mapCons task $ unifyCon task
   (Element specTy specTyNamed, specMeta) <- mkSpecTy task uniResults
+  when (length specTy.cons == 0) $ do
+    logPoint Warning "specialiseData" [task] "Specialised type \{show resultName} is empty"
   decls <- specDecls task uniResults specTy specMeta
   pure (specTy, decls)
 

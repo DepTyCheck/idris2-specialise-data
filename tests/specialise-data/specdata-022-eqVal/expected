@@ -1,1 +1,2 @@
 1/1: Building Test (Test.idr)
+LOG specialiseData:0: (\ x => Builtin.Equal {a = Prelude.Types.Nat} {b = Integer} x 3) Specialised type Eq3' is empty
